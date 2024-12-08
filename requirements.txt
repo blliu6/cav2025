@@ -1,0 +1,7 @@
+numpy==1.23.2
+sympy==1.11
+matplotlib==3.5.3
+torch==1.12.1
+sumofsquares==1.2.1
+cvxpy==1.4.1
+scipy==1.9.0
