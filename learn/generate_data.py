@@ -30,13 +30,12 @@ class Data:
         # plt.plot(s[:, :1], s[:, -1], '.')
         # plt.gca().set_aspect(1)
         # plt.show()
-        return torch.Tensor(s)
+        return torch.tensor(s, dtype=torch.float)
 
     def x2dotx(self, X, f):
-        f_x = []
-        for x in X:
-            f_x.append([f[i](x) for i in range(self.n)])
-        return torch.Tensor(f_x)
+        XT = X.T
+        res = [func(XT) for func in f]
+        return torch.stack(res, dim=1)
 
     def generate_data(self):
         batch_size = self.config.batch_size

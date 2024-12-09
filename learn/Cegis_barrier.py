@@ -27,6 +27,7 @@ class Cegis:
             data = Data(self.config).generate_data_for_continuous()
         else:
             data = Data(self.config).generate_data()
+
         learner = Learner(self.config)
         optimizer = torch.optim.AdamW(learner.net.parameters(), lr=self.config.lr)
 
@@ -58,7 +59,6 @@ class Cegis:
                 vis, state = sos.verify_continuous()
             else:
                 vis, state = sos.verify_all()
-
             if vis:
                 if self.config.example.continuous:
                     print('Continuous system SOS verification passed!')
@@ -115,7 +115,7 @@ class Cegis:
         for x, y in zip(data, add_res):
             if len(y) > 0:
                 ans = ans + len(y)
-                y = torch.Tensor(np.array(y))
+                y = torch.tensor(np.array(y), dtype=torch.float)
                 res.append(torch.cat([x, y], dim=0).detach())
             else:
                 res.append(x)

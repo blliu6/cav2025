@@ -132,12 +132,12 @@ class SOS:
         expr = sum([sp.diff(b1, x[i]) * self.ex.f1[i](x) for i in range(self.n)])
         # expr = expr - bm1 * b1
         # state[1] = self.verify_positive(expr, self.get_con(self.ex.l1), deg=deg[1])
-        state[1] = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[1])
+        state[1] = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2])
         if not state[1]:
             print('The lie condition is not satisfied.')
         ################################
         # unsafe
-        state[2] = self.verify_positive(-b1, self.get_con(self.ex.U), deg=deg[2])
+        state[2] = self.verify_positive(-b1, self.get_con(self.ex.U), deg=deg[3])
         if not state[2]:
             print('The unsafe condition is not satisfied.')
 

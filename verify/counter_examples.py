@@ -1,7 +1,20 @@
+import time
+
 import numpy as np
 import sympy as sp
 import cvxpy as cp
 import matplotlib.pyplot as plt
+
+
+def accelerate_hyperplane(points, point1, constraints, lam_constraints):
+    t = sp.Symbol('t', positive=True, real=True)
+
+    for point2 in points:
+        z = point1 + t * (point2 - point1)
+        res = []
+        for lam in lam_constraints:
+            res.append(lam(*z))
+
 
 
 def get_hyperplane(point1: np.ndarray, point2: np.ndarray, constraints, lam_constraints):
@@ -9,8 +22,7 @@ def get_hyperplane(point1: np.ndarray, point2: np.ndarray, constraints, lam_cons
     z = point1 + t * (point2 - point1)
     ans = []
     for i, lam in enumerate(lam_constraints):
-        res = sp.solve(lam(*z), t)
-        # print(f'value of t: {res}')
+        res = sp.solve(sp.expand(lam(*z)), t)
 
         if len(res) > 0:
             ans.append((min(res), i))
@@ -58,26 +70,35 @@ def get_ellipsoid(n, hyperplane):
         prob.solve(solver=cp.MOSEK)
         if prob.status == 'optimal':
             print(B.value, d.value)
-            return B.value, d.value
+            return True, B.value, d.value
         else:
-            return False
+            return False, None, None
     except:
-        return False
+        return False, None, None
 
 
-def get_maximum_volume_ellipsoid(center, constraints, nums=20):
-    points = get_points(center, nums)
+def get_maximum_volume_ellipsoid(center, constraints, tangent_nums=10, counter_nums=100):
+    points = get_points(center, tangent_nums)
 
     x = sp.symbols([f'x{i + 1}' for i in range(len(center))])
-    lam_constraints = [sp.lambdify(x, constraints[i]) for i in range(len(center))]
+    lam_constraints = [sp.lambdify(x, constraints[i]) for i in range(len(constraints))]
     hyperplane = [get_hyperplane(center, point, constraints, lam_constraints) for point in points]
     hyperplane = [item for item in hyperplane if item is not None]
-    hyperplane_expr = [item[0] for item in hyperplane]
     hyperplane_vector = [item[1] for item in hyperplane]
-    print(hyperplane_vector)
-    B, d = get_ellipsoid(len(center), hyperplane_vector)
-    # plot(hyperplane_expr, B, d)
-    
+
+    state, B, d = get_ellipsoid(len(center), hyperplane_vector)
+
+    if len(center) == 2 and state:
+        hyperplane_expr = [item[0] for item in hyperplane]
+        # plot(hyperplane_expr, B, d)
+    if state:
+        n = len(center)
+        u = np.random.randn(counter_nums, n)
+        u = np.array([e / np.sqrt(sum(e ** 2)) * np.random.random() ** (1 / n) for e in u]).T
+        ellipsoid = B @ u + d
+        return True, list(ellipsoid.T)
+    else:
+        return False, None
 
 
 def parse_equation(eq_str):
