@@ -3,6 +3,7 @@
 *.json
 test.py
 test1.py
+test*.py
 result.txt
 redundant/
 ComparativeExperiment/
