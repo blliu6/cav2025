@@ -42,7 +42,7 @@ class Cegis:
             print(f'iter:{i + 1}')
             t1 = timeit.default_timer()
             if self.config.example.continuous:
-                learner.learn_for_continous(data, optimizer)
+                learner.learn_for_continuous(data, optimizer)
             else:
                 learner.learn(data, optimizer)
             t2 = timeit.default_timer()

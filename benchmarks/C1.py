@@ -1,10 +1,11 @@
 import timeit
-import torch
+
 import numpy as np
-from utils.Config import CegisConfig
-from Examplers import get_example_by_name, get_example_by_id
-from learn.Learner import Learner
+import torch
+
+from Examplers import get_example_by_name
 from learn.Cegis_barrier import Cegis
+from utils.Config import CegisConfig
 
 
 def main():
@@ -38,4 +39,6 @@ def main():
 if __name__ == '__main__':
     torch.manual_seed(2024)
     np.random.seed(2024)
+    import os
+    os.environ["LINE_PROFILE"] = "1"
     main()

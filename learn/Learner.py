@@ -1,11 +1,6 @@
-import os
-
-import line_profiler
 import torch
 
 from utils.Config import CegisConfig
-
-os.environ["LINE_PROFILE"] = "1"
 
 
 class Learner:
@@ -18,7 +13,6 @@ class Learner:
             self.net = Net(config)
         self.config = config
 
-    @line_profiler.profile
     def learn(self, data, opt):
         learn_loops = self.config.learning_loops
         margin = self.config.margin
@@ -114,8 +108,7 @@ class Learner:
             if result:
                 break
 
-    @line_profiler.profile
-    def learn_for_continous(self, data, opt):
+    def learn_for_continuous(self, data, opt):
         learn_loops = self.config.learning_loops
         margin = self.config.margin
         slope = 1e-3
