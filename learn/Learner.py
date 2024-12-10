@@ -1,8 +1,10 @@
+import os
+
 import line_profiler
 import torch
+
 from utils.Config import CegisConfig
-from torch.func import jacrev
-import os
+
 os.environ["LINE_PROFILE"] = "1"
 
 
@@ -120,14 +122,16 @@ class Learner:
         relu6 = torch.nn.ReLU6()
         optimizer = opt
 
-        data_tensor = data
+        l1, I, U, l1_dot = data
 
         for epoch in range(learn_loops):
             optimizer.zero_grad()
 
-            b1_y, bl_1, b1_grad, bm1_y, b2_y = self.net(data_tensor)
+            b1_y, b2_y = self.net(I), self.net(U)
+            bl_1, b1_grad = self.net.get_out_and_grad(l1, l1_dot)
+            bm1_y = self.net.get_bm1(l1)
 
-            b1_y, bl_1, bm1_y, b2_y = b1_y[:, 0], bl_1[:, 0], bm1_y[:, 0], b2_y[:, 0]
+            b1_y, bl_1, bm1_y, b2_y = b1_y.reshape(-1), bl_1.reshape(-1), bm1_y.reshape(-1), b2_y.reshape(-1)
 
             weight = self.config.loss_weight_continuous
 

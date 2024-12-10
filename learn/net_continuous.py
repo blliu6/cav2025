@@ -79,26 +79,42 @@ class Net(nn.Module):
             self.bm1_lay1.append(layer1)
         #############################################################
 
-    def forward(self, data):
-        l1, I, U, l1_dot = data
-        #############################################################
-        # loss 1
-        b1_y = self.net_out(I, self.config.b1_act, self.b1_lay1, self.b1_lay2)
-        #############################################################
-        # loss 2
-        bl_1 = self.net_out(l1, self.config.b1_act, self.b1_lay1, self.b1_lay2)
-        b1_grad = self.get_gradient(l1, l1_dot, self.config.b1_act, self.b1_lay1, self.b1_lay2)
-        # bl_1, b1_grad = self.get_out_and_grad(l1, l1_dot, self.config.b1_act, self.b1_lay1, self.b1_lay2)
-
-        if len(self.config.bm1_hidden) == 0:
-            bm1_y = l1 * 0 + self.bm1_lay1[0]
-        else:
-            bm1_y = self.net_out(l1, self.config.bm1_act, self.bm1_lay1, self.bm1_lay2)
-        #############################################################
-        # loss 8
-        b2_y = self.net_out(U, self.config.b1_act, self.b1_lay1, self.b1_lay2)
-
-        return b1_y, bl_1, b1_grad, bm1_y, b2_y
+    def forward(self, x):
+        y, act = x, self.config.b1_act
+        for idx, (layer1, layer2) in enumerate(zip(self.b1_lay1[:-1], self.b1_lay2)):
+            if act[idx] == 'SQUARE':
+                y = (layer1(y)) ** 2
+            elif act[idx] == 'SKIP':
+                z1 = layer1(y)
+                z2 = layer2(x)
+                y = z1 * z2
+            elif act[idx] == 'MUL':
+                z1 = layer1(y)
+                z2 = layer2(y)
+                y = z1 * z2
+            elif act[idx] == 'LINEAR':
+                y = layer1(y)
+        y = self.b1_lay1[-1](y)
+        return y
+        # l1, I, U, l1_dot = data
+        # #############################################################
+        # # loss 1
+        # b1_y = self.net_out(I, self.config.b1_act, self.b1_lay1, self.b1_lay2)
+        # #############################################################
+        # # loss 2
+        # bl_1 = self.net_out(l1, self.config.b1_act, self.b1_lay1, self.b1_lay2)
+        # b1_grad = self.get_gradient(l1, l1_dot, self.config.b1_act, self.b1_lay1, self.b1_lay2)
+        # # bl_1, b1_grad = self.get_out_and_grad(l1, l1_dot, self.config.b1_act, self.b1_lay1, self.b1_lay2)
+        #
+        # if len(self.config.bm1_hidden) == 0:
+        #     bm1_y = l1 * 0 + self.bm1_lay1[0]
+        # else:
+        #     bm1_y = self.net_out(l1, self.config.bm1_act, self.bm1_lay1, self.bm1_lay2)
+        # #############################################################
+        # # loss 8
+        # b2_y = self.net_out(U, self.config.b1_act, self.b1_lay1, self.b1_lay2)
+        #
+        # return b1_y, bl_1, b1_grad, bm1_y, b2_y
 
     def net_out(self, x, act, lay1, lay2):
         y = x
@@ -118,38 +134,46 @@ class Net(nn.Module):
         y = lay1[-1](y)
         return y
 
-    # def get_out_and_grad(self, x, xdot, act, lay1, lay2):
-    #     y = x
-    #     jacobian = torch.diag_embed(torch.ones(x.shape[0], self.input))
-    #     for idx, (layer1, layer2) in enumerate(zip(lay1[:-1], lay2)):
-    #         if act[idx] == 'SQUARE':
-    #             z = layer1(y)
-    #             y = z ** 2
-    #             jacobian = torch.matmul(torch.matmul(2 * torch.diag_embed(z), layer1.weight), jacobian)
-    #         elif act[idx] == 'SKIP':
-    #             z1 = layer1(y)
-    #             z2 = layer2(x)
-    #             y = z1 * z2
-    #             jacobian = torch.matmul(torch.diag_embed(z1), layer2.weight) + torch.matmul(
-    #                 torch.matmul(torch.diag_embed(z2), layer1.weight), jacobian)
-    #         elif act[idx] == 'MUL':
-    #             z1 = layer1(y)
-    #             z2 = layer2(y)
-    #             y = z1 * z2
-    #             grad = torch.matmul(torch.diag_embed(z1), layer2.weight) + torch.matmul(torch.diag_embed(z2),
-    #                                                                                     layer1.weight)
-    #             jacobian = torch.matmul(grad, jacobian)
-    #
-    #     y = lay1[-1](y)
-    #     jacobian = torch.matmul(lay1[-1].weight, jacobian)
-    #     grad_y = torch.sum(torch.mul(jacobian[:, 0, :], xdot), dim=1)
-    #     return y, grad_y
+    def get_out_and_grad(self, x, xdot):
+        act, lay1, lay2 = self.config.b1_act, self.b1_lay1, self.b1_lay2
+        y = x
+        jacobian = torch.diag_embed(torch.ones(x.shape[0], self.input))
+        for idx, (layer1, layer2) in enumerate(zip(lay1[:-1], lay2)):
+            if act[idx] == 'SQUARE':
+                z = layer1(y)
+                y = z ** 2
+                jacobian = torch.matmul(torch.matmul(2 * torch.diag_embed(z), layer1.weight), jacobian)
+            elif act[idx] == 'SKIP':
+                z1 = layer1(y)
+                z2 = layer2(x)
+                y = z1 * z2
+                jacobian = torch.matmul(torch.diag_embed(z1), layer2.weight) + torch.matmul(
+                    torch.matmul(torch.diag_embed(z2), layer1.weight), jacobian)
+            elif act[idx] == 'MUL':
+                z1 = layer1(y)
+                z2 = layer2(y)
+                y = z1 * z2
+                grad = torch.matmul(torch.diag_embed(z1), layer2.weight) + torch.matmul(torch.diag_embed(z2),
+                                                                                        layer1.weight)
+                jacobian = torch.matmul(grad, jacobian)
 
-    def transform_data(self, data, f):
-        ans = [torch.unsqueeze(torch.tensor(list(map(ff, data))), dim=1) for ff in f]
-        return torch.cat(ans, dim=1)
+        y = lay1[-1](y)
+        jacobian = torch.matmul(lay1[-1].weight, jacobian)
+        grad_y = torch.sum(torch.mul(jacobian[:, 0, :], xdot), dim=1)
+        return y, grad_y
 
-    def get_gradient(self, x, xdot, act, lay1, lay2):
+    # def transform_data(self, data, f):
+    #     ans = [torch.unsqueeze(torch.tensor(list(map(ff, data))), dim=1) for ff in f]
+    #     return torch.cat(ans, dim=1)
+    def get_bm1(self, l1):
+        if len(self.config.bm1_hidden) == 0:
+            bm1_y = torch.zeros((len(l1), 1)) + self.bm1_lay1[0]
+        else:
+            bm1_y = self.net_out(l1, self.config.bm1_act, self.bm1_lay1, self.bm1_lay2)
+        return bm1_y
+
+    def get_gradient(self, x, xdot):
+        act, lay1, lay2 = self.config.b1_act, self.b1_lay1, self.b1_lay2
         y = x
         jacobian = torch.diag_embed(torch.ones(x.shape[0], self.input))
         for idx, (layer1, layer2) in enumerate(zip(lay1[:-1], lay2)):
