@@ -4,18 +4,61 @@ import numpy as np
 import sympy as sp
 import cvxpy as cp
 import matplotlib.pyplot as plt
+import multiprocessing as mp
+from multiprocessing import Pool
+
+
+def expand(expr):
+    t = sp.Symbol('t', positive=True, real=True)
+    expr = sp.expand(expr)
+    ans = sp.solve(expr, t)
+    if len(ans) > 0:
+        return min(ans)
+    else:
+        return np.inf
+
+
+def compute_hyperplane(args):
+    t_value, pos, point1, point2, constraints = args
+    if t_value != np.inf:
+        tangent_point = point1 + t_value * (point2 - point1)
+
+        x = sp.symbols([f'x{i + 1}' for i in range(len(point1))])
+        diff = [sp.lambdify(x, sp.diff(constraints[pos], x[i]))(*tangent_point) for i in range(len(x))]
+        # print(diff)
+
+        cutting_plane = sp.expand(sum([diff[i] * (x[i] - tangent_point[i]) for i in range(len(x))]))
+        b = -sum([diff[i] * tangent_point[i] for i in range(len(x))])
+        a = np.array(diff)
+
+        lam_cutting_plane = sp.lambdify(x, cutting_plane)
+        if lam_cutting_plane(*point1) > 0:
+            return cutting_plane, (np.array([-a]), b)
+        else:
+            return -cutting_plane, (np.array([a]), -b)
+    else:
+        return None
 
 
 def accelerate_hyperplane(points, point1, constraints, lam_constraints):
     t = sp.Symbol('t', positive=True, real=True)
 
+    res = []
     for point2 in points:
         z = point1 + t * (point2 - point1)
-        res = []
         for lam in lam_constraints:
             res.append(lam(*z))
+    pool = Pool(mp.cpu_count() // 3)
+    res = pool.map(expand, res)
 
+    res = np.array(res).reshape(-1, len(constraints))
+    res_min = np.min(res, axis=1)
+    res_pos = np.argmin(res, axis=1)
+    res_pos = [int(item) for item in res_pos]
 
+    ans = [(res_min[i], res_pos[i], point1, points[i], constraints) for i in range(len(points))]
+    ans = pool.map(compute_hyperplane, ans)
+    return ans
 
 def get_hyperplane(point1: np.ndarray, point2: np.ndarray, constraints, lam_constraints):
     t = sp.Symbol('t', positive=True, real=True)
@@ -82,6 +125,8 @@ def get_maximum_volume_ellipsoid(center, constraints, tangent_nums=10, counter_n
 
     x = sp.symbols([f'x{i + 1}' for i in range(len(center))])
     lam_constraints = [sp.lambdify(x, constraints[i]) for i in range(len(constraints))]
+    # hyperplane = accelerate_hyperplane(points, center, constraints, lam_constraints)
+
     hyperplane = [get_hyperplane(center, point, constraints, lam_constraints) for point in points]
     hyperplane = [item for item in hyperplane if item is not None]
     hyperplane_vector = [item[1] for item in hyperplane]
@@ -146,7 +191,7 @@ def plot(hyperplane, B, d):
         x2_vals = np.array([float(x2_expr.subs('x1', val)) for val in x1_vals])
 
         # 绘制直线
-        # plt.plot(x1_vals, x2_vals, label=f'{eq_str} = 0')
+        plt.plot(x1_vals, x2_vals, label=f'{eq_str} = 0')
 
     x = np.linspace(-4, 4, 400)  # 从-2到4生成400个点
     # 计算对应的y值

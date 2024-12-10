@@ -3,6 +3,7 @@ import torch.nn as nn
 import numpy as np
 import sympy as sp
 from utils.Config import CegisConfig
+from torch.func import jacrev
 
 
 class Net(nn.Module):
@@ -103,8 +104,7 @@ class Net(nn.Module):
         y = x
         for idx, (layer1, layer2) in enumerate(zip(lay1[:-1], lay2)):
             if act[idx] == 'SQUARE':
-                z = layer1(y)
-                y = z ** 2
+                y = (layer1(y)) ** 2
             elif act[idx] == 'SKIP':
                 z1 = layer1(y)
                 z2 = layer2(x)

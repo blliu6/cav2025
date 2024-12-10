@@ -1,5 +1,9 @@
+import line_profiler
 import torch
 from utils.Config import CegisConfig
+from torch.func import jacrev
+import os
+os.environ["LINE_PROFILE"] = "1"
 
 
 class Learner:
@@ -12,6 +16,7 @@ class Learner:
             self.net = Net(config)
         self.config = config
 
+    @line_profiler.profile
     def learn(self, data, opt):
         learn_loops = self.config.learning_loops
         margin = self.config.margin
@@ -37,49 +42,57 @@ class Learner:
             ###########
             # loss 1
             p = b1_y
-            accuracy[0] = sum(p > margin / 2).item() * 100 / len(b1_y)
+            # accuracy[0] = sum(p > margin / 2).item() * 100 / len(b1_y)
+            accuracy[0] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_1 = weight[0] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 2
             p = b1_grad - bm1_y * bl_1
-            accuracy[1] = sum(p > margin / 2).item() * 100 / len(bl_1)
+            # accuracy[1] = sum(p > margin / 2).item() * 100 / len(bl_1)
+            accuracy[1] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_2 = weight[1] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 3
             p = b2_grad - bm2_y * bl_2
-            accuracy[2] = sum(p > margin / 2).item() * 100 / len(bl_2)
+            # accuracy[2] = sum(p > margin / 2).item() * 100 / len(bl_2)
+            accuracy[2] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_3 = weight[2] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 4
             p = b_l2_y - rm1_y * b_l1_y
-            accuracy[3] = sum(p > margin / 2).item() * 100 / len(b_l1_y)
+            # accuracy[3] = sum(p > margin / 2).item() * 100 / len(b_l1_y)
+            accuracy[3] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_4 = weight[3] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 5
             p = bb_l1_y - rm2_y * bb_l2_y
-            accuracy[4] = sum(p > margin / 2).item() * 100 / len(bb_l2_y)
+            # accuracy[4] = sum(p > margin / 2).item() * 100 / len(bb_l2_y)
+            accuracy[4] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_5 = weight[4] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 6
             p = rm1_y
-            accuracy[5] = sum(p > margin / 2).item() * 100 / len(rm1_y)
+            # accuracy[5] = sum(p > margin / 2).item() * 100 / len(rm1_y)
+            accuracy[5] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_6 = weight[5] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 7
             p = rm2_y
-            accuracy[6] = sum(p > margin / 2).item() * 100 / len(rm2_y)
+            # accuracy[6] = sum(p > margin / 2).item() * 100 / len(rm2_y)
+            accuracy[6] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_7 = weight[6] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 8
             p = b2_y
-            accuracy[7] = sum(p < -margin / 2).item() * 100 / len(b2_y)
+            # accuracy[7] = sum(p < -margin / 2).item() * 100 / len(b2_y)
+            accuracy[7] = ((p < -margin / 2).float().mean()).item() * 100
 
             loss_8 = weight[7] * (torch.relu(p + margin) - slope * relu6(-p - margin)).mean()
             ###########
@@ -99,6 +112,7 @@ class Learner:
             if result:
                 break
 
+    @line_profiler.profile
     def learn_for_continous(self, data, opt):
         learn_loops = self.config.learning_loops
         margin = self.config.margin
@@ -121,19 +135,22 @@ class Learner:
             ###########
             # loss 1
             p = b1_y
-            accuracy[0] = sum(p > margin / 2).item() * 100 / len(b1_y)
+            # accuracy[0] = sum(p > margin / 2).item() * 100 / len(b1_y)
+            accuracy[0] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_1 = weight[0] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 2
             p = b1_grad - bm1_y * bl_1
-            accuracy[1] = sum(p > margin / 2).item() * 100 / len(bl_1)
+            # accuracy[1] = sum(p > margin / 2).item() * 100 / len(bl_1)
+            accuracy[1] = ((p > margin / 2).float().mean()).item() * 100
 
             loss_2 = weight[1] * (torch.relu(-p + margin) - slope * relu6(p - margin)).mean()
             ###########
             # loss 8
             p = b2_y
-            accuracy[2] = sum(p < -margin / 2).item() * 100 / len(b2_y)
+            # accuracy[2] = sum(p < -margin / 2).item() * 100 / len(b2_y)
+            accuracy[2] = ((p < -margin / 2).float().mean()).item() * 100
 
             loss_8 = weight[2] * (torch.relu(p + margin) - slope * relu6(-p - margin)).mean()
             ###########

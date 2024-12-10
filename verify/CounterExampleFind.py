@@ -90,10 +90,10 @@ class CounterExampleFinder:
         constraints.append(-expr)
         state, center = self.get_circle_center(constraints)
         if state:
-            t1 = time.time()
+            if self.ellipsoid:
+                return self.filter_point(self.enhance(center))
+
             state1, counter_points = get_maximum_volume_ellipsoid(center, constraints, counter_nums=self.nums)
-            t2 = time.time()
-            print('Time to find the maximum volume ellipsoid:', t2 - t1)
 
             if state1:
                 return self.filter_point(counter_points)
