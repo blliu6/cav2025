@@ -39,6 +39,4 @@ def main():
 if __name__ == '__main__':
     torch.manual_seed(2024)
     np.random.seed(2024)
-    import os
-    os.environ["LINE_PROFILE"] = "1"
     main()
