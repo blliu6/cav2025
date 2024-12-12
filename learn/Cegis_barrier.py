@@ -119,7 +119,7 @@ class Cegis:
                 res.append(torch.cat([x, y], dim=0).detach())
             else:
                 res.append(x)
-        print(f'Add {ans} counterexamples!')
+        # print(f'Add {ans} counterexamples!')
         return tuple(res)
 
     def save_model(self, net, barrier):

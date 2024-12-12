@@ -1,11 +1,6 @@
-import time
-
-import cvxpy as cp
 import numpy as np
 import sympy as sp
-from scipy.optimize import minimize, NonlinearConstraint
-import multiprocessing as mp
-from multiprocessing import Pool
+from scipy.optimize import minimize
 
 from benchmarks.Examplers import Zone
 from utils.Config import CegisConfig
@@ -45,6 +40,10 @@ def split_bounds(bounds, n):
         return subbounds
 
 
+def get_fun(lam):
+    return {'type': 'ineq', 'fun': lambda x: lam(*x)}
+
+
 class CounterExampleFinder:
     def __init__(self, config: CegisConfig):
         self.config = config
@@ -62,18 +61,75 @@ class CounterExampleFinder:
         data = [item for i, item in enumerate(data) if vis[i] == len(self.lam_con)]
         return data
 
-    def get_circle_center(self, constraints):
-        x = sp.symbols([f'x{i + 1}' for i in range(self.n)])
-        lam_con = [sp.lambdify(x, item) for item in constraints]
-        self.lam_con = lam_con
-        self.con = constraints
-        cons = [{'type': 'ineq', 'fun': lambda y: item(*y)} for item in lam_con]
+    def get_middle(self, worst_point, expr, zone: Zone):
+        x_ = sp.symbols([f'x{i + 1}' for i in range(self.ex.n)])
+        opt = sp.lambdify(x_, expr)
+        p = 0
+        for i in range(len(worst_point)):
+            p = p + (x_[i] - worst_point[i]) ** 2
+        p_fun = sp.lambdify(x_, p)
+        result = None
+        if zone.shape == 'box':
+            bound = tuple(zip(zone.low, zone.up))
+            con = {'type': 'eq', 'fun': lambda x: opt(*x)}
+            res = minimize(lambda x: p_fun(*x), np.zeros(self.ex.n), bounds=bound, constraints=con)
+            if res.success:
+                result = res.x
+        elif zone.shape == 'ball':
+            poly = zone.r
+            for i in range(self.ex.n):
+                poly = poly - (x_[i] - zone.center[i]) ** 2
+            poly_fun = sp.lambdify(x_, poly)
+            con = {'type': 'eq', 'fun': lambda x: opt(*x)}
+            con1 = {'type': 'ineq', 'fun': lambda x: poly_fun(*x)}
+            res = minimize(lambda x: p_fun(*x), np.zeros(self.ex.n), constraints=(con, con1))
+            if res.success:
+                result = res.x
+        if result is None:
+            return False, None, None
+        else:
+            return True, (np.array(result) + np.array(worst_point)) / 2, np.sqrt(
+                sum((np.array(result) - np.array(worst_point)) ** 2))
 
-        res = minimize(lambda y: 0, np.zeros(self.ex.n), constraints=cons)
-        if res.success:
-            return True, res.x
+    def get_center(self, zone, expr):
+        x_ = sp.symbols([f'x{i + 1}' for i in range(self.ex.n)])
+        opt = sp.lambdify(x_, expr)
+        result = None
+        if zone.shape == 'box':
+            bound = tuple(zip(zone.low, zone.up))
+            res = minimize(lambda x: opt(*x), np.zeros(self.ex.n), bounds=bound)
+            if res.fun < 0 and res.success:
+                result = res.x
+        else:
+            poly = zone.r
+            for i in range(self.ex.n):
+                poly = poly - (x_[i] - zone.center[i]) ** 2
+            poly_fun = sp.lambdify(x_, poly)
+            con = {'type': 'ineq', 'fun': lambda x: poly_fun(*x)}
+            res = minimize(lambda x: opt(*x), np.zeros(self.ex.n), constraints=con)
+            if res.fun < 0 and res.success:
+                result = res.x
+
+        if result is not None:
+            st, p, q = self.get_middle(result, expr, zone)
+            if st:
+                return True, p
+            else:
+                return False, None
         else:
             return False, None
+
+    # def get_circle_center(self, constraints):
+    #     x = sp.symbols([f'x{i + 1}' for i in range(self.n)])
+    #     lam_con = [sp.lambdify(x, item) for item in constraints]
+    #     self.lam_con = lam_con
+    #     cons = [get_fun(lam) for lam in lam_con]
+    #
+    #     res = minimize(lambda y: 0, np.zeros(self.ex.n), constraints=cons)
+    #     if res.success:
+    #         return True, res.x
+    #     else:
+    #         return False, None
 
     def get_counterexample(self, zone: Zone, expr):
         constraints = []
@@ -88,17 +144,27 @@ class CounterExampleFinder:
             constraints.append(sp.expand(poly))
 
         constraints.append(-expr)
-        state, center = self.get_circle_center(constraints)
+
+        lam_con = [sp.lambdify(x, item) for item in constraints]
+        self.lam_con = lam_con
+
+        state, center = self.get_center(zone, expr)
         if state:
-            if self.ellipsoid:
-                return self.filter_point(self.enhance(center))
+            if not self.ellipsoid:
+                counter = self.filter_point(self.enhance(center))
+                print(f'Add {len(counter)} counterexamples!')
+                return counter
 
-            state1, counter_points = get_maximum_volume_ellipsoid(center, constraints, counter_nums=self.nums)
-
+            state1, counter_points = get_maximum_volume_ellipsoid(center, constraints, counter_nums=self.nums,
+                                                                  args=(self.ex, expr))
             if state1:
-                return self.filter_point(counter_points)
+                counter = self.filter_point(counter_points)
+                print(f'Add {len(counter)} counterexamples!')
+                return counter
             else:
-                return self.filter_point(self.enhance(center))
+                counter = self.filter_point(self.enhance(center))
+                print(f'Add {len(counter)} counterexamples!')
+                return counter
         else:
             return []
 
@@ -156,8 +222,9 @@ class CounterExampleFinder:
                 bounds = [self.ex.l1]
             for e in bounds:
                 x = self.get_counterexample(e, expr[1])
-                l1.extend(x)
-                l1_dot.extend(self.x2dotx(x, self.ex.f1))
+                if len(x) > 0:
+                    l1.extend(x)
+                    l1_dot.extend(self.x2dotx(x, self.ex.f1))
 
         res = (l1, I, U, l1_dot)
         return res
