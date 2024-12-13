@@ -18,14 +18,24 @@ class SOS:
     def verify_positive(self, expr, con, deg=2):
         x = self.x
         prob = SOSProblem()
+        const = []
         for c in con:
             P, par, terms = self.polynomial(deg)
-            prob.add_sos_constraint(P, x)
+            const.append(prob.add_sos_constraint(P, x))
             expr = expr - c * P
         expr = sp.expand(expr)
-        prob.add_sos_constraint(expr, x)
+        const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
+            print('--------------------------------')
+            for i, item in enumerate(const):
+                if i != len(const) - 1:
+                    print('constraint:', con[i])
+                    print('Multiplier decomposition results:', sum(item.get_sos_decomp()))
+                else:
+                    print('Total decomposition results:')
+                    print(sum(item.get_sos_decomp()))
+            print('--------------------------------')
             return True
         except:
             return False
@@ -34,17 +44,31 @@ class SOS:
         x = self.x
         prob = SOSProblem()
         expr = A
+        const = []
         for c in con:
             P, par, terms = self.polynomial(deg)
-            prob.add_sos_constraint(P, x)
+            const.append(prob.add_sos_constraint(P, x))
             expr = expr - c * P
 
         R, par, terms = self.polynomial(R_deg)
+        par_s = [prob.sym_to_var(item) for item in par]
         expr = expr - R * B
         expr = sp.expand(expr)
-        prob.add_sos_constraint(expr, x)
+        const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
+            print('--------------------------------')
+            for i, item in enumerate(const):
+                if i != len(const) - 1:
+                    print('constraint:', con[i])
+                    print('Multiplier decomposition results:', sum(item.get_sos_decomp()))
+                else:
+                    value = [item.value for item in par_s]
+                    w = sum([x * y for x, y in zip(value, terms)])
+                    print('Multiplier:', w)
+                    print('Total decomposition results:')
+                    print(sum(item.get_sos_decomp()))
+            print('--------------------------------')
             return True
         except:
             return False
@@ -127,6 +151,8 @@ class SOS:
         state[0] = self.verify_positive(b1, self.get_con(self.ex.I), deg=deg[0])
         if not state[0]:
             print('The init condition is not satisfied.')
+        else:
+            print('The init condition is satisfied.')
         ################################
         # Lie
         expr = sum([sp.diff(b1, x[i]) * self.ex.f1[i](x) for i in range(self.n)])
@@ -135,11 +161,15 @@ class SOS:
         state[1] = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2])
         if not state[1]:
             print('The lie condition is not satisfied.')
+        else:
+            print('The lie condition is satisfied.')
         ################################
         # unsafe
         state[2] = self.verify_positive(-b1, self.get_con(self.ex.U), deg=deg[3])
         if not state[2]:
             print('The unsafe condition is not satisfied.')
+        else:
+            print('The unsafe condition is satisfied.')
 
         result = True
         for e in state:
