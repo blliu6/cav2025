@@ -7,3 +7,6 @@ test*.py
 result.txt
 redundant/
 ComparativeExperiment/
+picture/
+__pycache__/
+model/
