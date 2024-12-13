@@ -69,9 +69,9 @@ class SOS:
                     print('Total decomposition results:')
                     print(sum(item.get_sos_decomp()))
             print('--------------------------------')
-            return True
+            return True, w
         except:
-            return False
+            return False, None
 
     def verify_all(self):
         b1, b2, bm1, bm2, rm1, rm2 = self.poly_list
@@ -86,7 +86,7 @@ class SOS:
         ################################
         # second
         expr = sum([sp.diff(b1, x[i]) * self.ex.f1[i](x) for i in range(self.n)])
-        state[1] = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1])
+        state[1], R = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1])
         # expr = expr - bm1 * b1
         # state[1] = self.verify_positive(expr, self.get_con(self.ex.l1), deg=deg[1])
         if not state[1]:
@@ -94,7 +94,7 @@ class SOS:
         ################################
         # third
         expr = sum([sp.diff(b2, x[i]) * self.ex.f2[i](x) for i in range(self.n)])
-        state[2] = self.verify_positive_multiplier(expr, b2, self.get_con(self.ex.l2), deg=deg[2])
+        state[2], R = self.verify_positive_multiplier(expr, b2, self.get_con(self.ex.l2), deg=deg[2])
         # expr = expr - bm2 * b2
         # state[2] = self.verify_positive(expr, self.get_con(self.ex.l2), deg=deg[2])
         if not state[2]:
@@ -104,7 +104,7 @@ class SOS:
         b2_fun = sp.lambdify(x, b2)
         x_ = [self.ex.r1[i](x) for i in range(self.n)]
         bl2 = b2_fun(*x_)
-        state[3] = self.verify_positive_multiplier(bl2, b1, self.get_con(self.ex.g1), deg=deg[3])
+        state[3], R = self.verify_positive_multiplier(bl2, b1, self.get_con(self.ex.g1), deg=deg[3])
         # expr = bl2 - rm1 * b1
         # state[3] = self.verify_positive(expr, self.get_con(self.ex.g1), deg=deg[3])
         if not state[3]:
@@ -114,7 +114,7 @@ class SOS:
         b1_fun = sp.lambdify(x, b1)
         x_ = [self.ex.r2[i](x) for i in range(self.n)]
         bl1 = b1_fun(*x_)
-        state[4] = self.verify_positive_multiplier(bl1, b2, self.get_con(self.ex.g2), deg=deg[4])
+        state[4], R = self.verify_positive_multiplier(bl1, b2, self.get_con(self.ex.g2), deg=deg[4])
         # expr = bl1 - rm2 * b2
         # state[4] = self.verify_positive(expr, self.get_con(self.ex.g2), deg=deg[4])
         if not state[4]:
@@ -158,7 +158,7 @@ class SOS:
         expr = sum([sp.diff(b1, x[i]) * self.ex.f1[i](x) for i in range(self.n)])
         # expr = expr - bm1 * b1
         # state[1] = self.verify_positive(expr, self.get_con(self.ex.l1), deg=deg[1])
-        state[1] = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2])
+        state[1], R = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2])
         if not state[1]:
             print('The lie condition is not satisfied.')
         else:
@@ -171,6 +171,9 @@ class SOS:
         else:
             print('The unsafe condition is satisfied.')
 
+        from SMT.z3_verifyer import smt_verify
+
+        # print('The result of smt:', smt_verify(self.ex, b1, sp.expand(expr - R * b1)))
         result = True
         for e in state:
             result = result and e
