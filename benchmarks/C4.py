@@ -21,7 +21,7 @@ def main():
         "example": example,
         'bm1_act': [],
         "batch_size": 500,
-        'lr': 0.9,
+        'lr': 0.1,
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.8,
         'margin': 2,
