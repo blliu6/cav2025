@@ -19,7 +19,7 @@ def main():
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         "example": example,
-        "batch_size": 500,
+        "batch_size": 300,
         'lr': 0.2,
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.5,
