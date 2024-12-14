@@ -24,9 +24,9 @@ def main():
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.5,
         'margin': 0.5,
-        "DEG_continuous": [0, 2, 1, 0],
+        "DEG_continuous": [2, 2, 1, 2],
         "learning_loops": 100,
-        'max_iter': 10
+        'max_iter': 6
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
