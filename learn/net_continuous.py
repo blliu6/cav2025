@@ -156,6 +156,10 @@ class Net(nn.Module):
                 grad = torch.matmul(torch.diag_embed(z1), layer2.weight) + torch.matmul(torch.diag_embed(z2),
                                                                                         layer1.weight)
                 jacobian = torch.matmul(grad, jacobian)
+            elif act[idx] == 'LINEAR':
+                z = layer1(y)
+                y = z
+                jacobian = torch.matmul(layer1.weight, jacobian)
 
         y = lay1[-1](y)
         jacobian = torch.matmul(lay1[-1].weight, jacobian)
