@@ -161,4 +161,4 @@ def get_maximum_volume_ellipsoid(center, constraints, tangent_nums=20, counter_n
         ellipsoid = B @ u + d
         return True, list(ellipsoid.T)
     else:
-        return False, None, None
+        return False, None
