@@ -25,7 +25,7 @@ def main():
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.8,
         'margin': 2,
-        "DEG_continuous": [4, 4, 3, 4],
+        "DEG_continuous": [2, 4, 1, 2],
         "learning_loops": 100,
         'max_iter': 10,
         'counterexamples_ellipsoid': True
