@@ -4,7 +4,7 @@ import sympy as sp
 from SumOfSquares import SOSProblem
 from utils.Config import CegisConfig
 from benchmarks.Examplers import Zone
-
+from loguru import logger
 
 class SOS:
     def __init__(self, config: CegisConfig, poly_list):
@@ -27,14 +27,31 @@ class SOS:
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
+            
+            logger.info("SOS Infomation")
             print('--------------------------------')
             for i, item in enumerate(const):
                 if i != len(const) - 1:
                     print('constraint:', con[i])
-                    print('Multiplier decomposition results:', sum(item.get_sos_decomp()))
+                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                        lambda x: x.is_Float,  # 条件：是浮点数
+                        lambda x: sp.Rational(str(x))  # 转换为有理数
+                    )
+                    print('Multiplier decomposition results:', expr_rational)
+                    print("Q is :", item.Q)
+                    print()
+                    print("sym is ", item.b_sym)
+                    print()
                 else:
-                    print('Total decomposition results:')
-                    print(sum(item.get_sos_decomp()))
+                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                        lambda x: x.is_Float,  # 条件：是浮点数
+                        lambda x: sp.Rational(str(x))  # 转换为有理数
+                    )
+                    print('Total decomposition results:', expr_rational)
+                    print("Q is :", item.Q)
+                    print()
+                    print("sym is ", item.b_sym)
+                    print()
             print('--------------------------------')
             return True
         except:
@@ -56,18 +73,34 @@ class SOS:
         expr = sp.expand(expr)
         const.append(prob.add_sos_constraint(expr, x))
         try:
+            logger.info("SOS Infomation")
             prob.solve(solver='mosek')
             print('--------------------------------')
             for i, item in enumerate(const):
                 if i != len(const) - 1:
                     print('constraint:', con[i])
-                    print('Multiplier decomposition results:', sum(item.get_sos_decomp()))
+                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                        lambda x: x.is_Float,  # 条件：是浮点数
+                        lambda x: sp.Rational(str(x))  # 转换为有理数
+                    )
+                    print('Multiplier decomposition results:', expr_rational)
+                    print("Q is :", item.Q)
+                    print()
+                    print("sym is ", item.b_sym)
+                    print()
                 else:
                     value = [item.value for item in par_s]
                     w = sum([x * y for x, y in zip(value, terms)])
                     print('Multiplier:', w)
-                    print('Total decomposition results:')
-                    print(sum(item.get_sos_decomp()))
+                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                        lambda x: x.is_Float,  # 条件：是浮点数
+                        lambda x: sp.Rational(str(x))  # 转换为有理数
+                    )
+                    print('Total decomposition results:', expr_rational)
+                    print("Q is :", item.Q)
+                    print()
+                    print("sym is ", item.b_sym)
+                    print()
             print('--------------------------------')
             return True, w
         except:
