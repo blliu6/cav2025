@@ -14,6 +14,8 @@ class Draw:
         self.ex = example
         self.b1 = b1
         self.b2 = b2
+        if not os.path.exists('./picture'):
+            os.mkdir('./picture')
 
     def draw(self):
         fig = plt.figure()
