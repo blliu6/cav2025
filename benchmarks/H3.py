@@ -44,7 +44,7 @@ def main():
         'margin': 1,
         "learning_loops": 100,
         # Verification
-        "DEG": [2, 0, 2, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
+        "DEG": [2, 2, 2, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
         'max_iter': 100,  # The maximum number of iterations.
         'counterexample_nums': 100  # The number of counterexamples generated each time.
     }
