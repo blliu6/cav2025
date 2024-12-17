@@ -1,6 +1,8 @@
 import timeit
 import torch
 import numpy as np
+import sys
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 from utils.Config import CegisConfig
 from Examplers import get_example_by_name, get_example_by_id
 from learn.Learner import Learner

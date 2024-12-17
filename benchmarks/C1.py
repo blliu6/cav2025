@@ -2,8 +2,9 @@ import timeit
 
 import numpy as np
 import torch
+from loguru import logger
 import sys
-sys.path.append("/home/rmx/workspace/cav2025")
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 from Examplers import get_example_by_name
 from learn.Cegis_barrier import Cegis
 from utils.Config import CegisConfig
