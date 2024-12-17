@@ -2,6 +2,7 @@ import timeit
 import torch
 import numpy as np
 import sys
+import os
 sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 from utils.Config import CegisConfig
 from Examplers import get_example_by_name, get_example_by_id
@@ -17,6 +18,11 @@ def main():
     example = get_example_by_name('C2')
 
     start = timeit.default_timer()
+    
+    path = './output/C2/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        
     opts = {
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
@@ -29,7 +35,8 @@ def main():
         'margin': 2,
         "DEG_continuous": [2, 2, 1, 2],
         "learning_loops": 100,
-        'max_iter': 10
+        'max_iter': 10,
+        'path': path
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)

@@ -1,5 +1,5 @@
 import timeit
-
+import os
 import numpy as np
 import torch
 from loguru import logger
@@ -18,6 +18,11 @@ def main():
     example = get_example_by_name('C1')
 
     start = timeit.default_timer()
+    
+    path = './output/C1/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        
     opts = {
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
@@ -30,7 +35,8 @@ def main():
         'margin': 2,
         "DEG_continuous": [2, 2, 1, 2],
         "learning_loops": 100,
-        'max_iter': 10
+        'max_iter': 10,
+        'path': path
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
