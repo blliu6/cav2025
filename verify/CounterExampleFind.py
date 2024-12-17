@@ -183,13 +183,15 @@ class CounterExampleFinder:
 
         if not state[1]:
             x = self.get_counterexample(self.ex.l1, expr[1])
-            l1.extend(x)
-            l1_dot.extend(self.x2dotx(x, self.ex.f1))
+            if len(x) > 0:
+                l1.extend(x)
+                l1_dot.extend(self.x2dotx(x, self.ex.f1))
 
         if not state[2]:
             x = self.get_counterexample(self.ex.l2, expr[2])
-            l2.extend(x)
-            l2_dot.extend(self.x2dotx(x, self.ex.f2))
+            if len(x) > 0:
+                l2.extend(x)
+                l2_dot.extend(self.x2dotx(x, self.ex.f2))
 
         if not state[3]:
             x = self.get_counterexample(self.ex.g1, expr[3])
