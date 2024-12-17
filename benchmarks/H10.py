@@ -27,25 +27,25 @@ def main():
         'b2_hidden': b2_hidden_neurons,
         "example": example,
         # Multipliers for Lie derivative conditions.
-        'bm1_hidden': [],  # the number of hidden layer nodes.
-        'bm2_hidden': [],
-        'bm1_act': [],  # the activation function.
-        'bm2_act': [],
+        'bm1_hidden': [10],  # the number of hidden layer nodes.
+        'bm2_hidden': [10],
+        'bm1_act': ['SKIP'],  # the activation function.
+        'bm2_act': ['SKIP'],
         # Multipliers for guard conditions.
         'rm1_hidden': [],  # the number of hidden layer nodes.
         'rm2_hidden': [],
         'rm1_act': [],  # the activation function.
         'rm2_act': [],
         # Neural network
-        "batch_size": 1000,
-        'lr': 0.05,  # the learning rate
+        "batch_size": 100,
+        'lr': 1,  # the learning rate
         'loss_weight': (1, 1, 1, 1, 1, 1, 1, 1),  # The weight of the loss term
-        'R_b': 0.4,
+        'R_b': 0.3,
         'margin': 1,
         "learning_loops": 100,
         # Verification
-        "DEG": [2, 2, 4, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
-        'max_iter': 100,  # The maximum number of iterations.
+        "DEG": [2, 2, 2, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
+        'max_iter': 10,  # The maximum number of iterations.
         'counterexample_nums': 100  # The number of counterexamples generated each time.
     }
     Config = CegisConfig(**opts)
