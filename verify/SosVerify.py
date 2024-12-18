@@ -1,4 +1,5 @@
 import os
+import os
 from functools import reduce
 from itertools import product
 import sympy as sp

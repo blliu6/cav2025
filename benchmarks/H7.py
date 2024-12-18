@@ -37,14 +37,14 @@ def main():
         'rm1_act': [],  # the activation function.
         'rm2_act': [],
         # Neural network
-        "batch_size": 1000,
-        'lr': 0.09,  # the learning rate
+        "batch_size": 100,
+        'lr': 0.03,  # the learning rate
         'loss_weight': (1, 1, 1, 1, 1, 1, 1, 1),  # The weight of the loss term
-        'R_b': 0.5,
+        'R_b': 0.1,
         'margin': 1,
         "learning_loops": 100,
         # Verification
-        "DEG": [2, 0, 2, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
+        "DEG": [2, 2, 2, 2, 2, 2, 2, 2],  # Degrees of multipliers during SOS verification.
         'max_iter': 10,  # The maximum number of iterations.
         'counterexample_nums': 10  # The number of counterexamples generated each time.
     }
