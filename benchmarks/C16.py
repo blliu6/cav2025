@@ -1,3 +1,7 @@
+
+import os, sys
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
+
 import timeit
 import torch
 import numpy as np
@@ -13,9 +17,12 @@ def main():
     b1_hidden_neurons = [10] * len(b1_activations)
 
     example = get_example_by_name('C16')
-
+    path = './output/C16/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
     start = timeit.default_timer()
     opts = {
+        'path':path,
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         "example": example,

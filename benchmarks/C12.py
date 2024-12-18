@@ -1,4 +1,8 @@
 import timeit
+
+import os, sys
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
+
 import torch
 import numpy as np
 from utils.Config import CegisConfig
@@ -14,6 +18,10 @@ def main():
 
     example = get_example_by_name('C12')
 
+    path = './output/C12/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        
     start = timeit.default_timer()
     opts = {
         'b1_act': b1_activations,
@@ -28,7 +36,8 @@ def main():
         "DEG_continuous": [2, 2, 2, 2],
         "learning_loops": 100,
         'max_iter': 5,
-        'split': True
+        'split': True,
+        'path':path
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)

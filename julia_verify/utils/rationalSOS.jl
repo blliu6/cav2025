@@ -44,7 +44,7 @@ function rational_SOS(f, g, minval, monos, Q)
     coeffs_p = [Symbolics.coeff(coeffs, _p[i]) for i in 1:m]
     # println("coeff whith p:\n $(coeffs_p)\n")
 
-    @show coeffs_p
+    # @show coeffs_p
     # Generate the matrix equation
     A, b = generate_matrix(coeffs_p, [_q[i] for i in 1:m])
 

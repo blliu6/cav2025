@@ -1,3 +1,5 @@
+import os, sys
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 import timeit
 import torch
 import numpy as np
@@ -14,6 +16,10 @@ def main():
 
     example = get_example_by_name('C5')
 
+    path = './output/C5/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    
     start = timeit.default_timer()
     opts = {
         'b1_act': b1_activations,
@@ -27,7 +33,8 @@ def main():
         "DEG_continuous": [2, 2, 1, 2],
         "learning_loops": 100,
         'max_iter': 10,
-        'counterexamples_ellipsoid': True
+        'counterexamples_ellipsoid': True,
+        'path':path
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
