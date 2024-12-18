@@ -35,6 +35,7 @@ class CegisConfig:
     lie_counterexample = 0
     counterexamples_ellipsoid = False
     eps = 0.05
+    path = "./"
     C_b = 0.2
 
     def __init__(self, **kwargs):
