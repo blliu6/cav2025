@@ -1,5 +1,8 @@
 import timeit
 import torch
+import os
+import sys
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 import numpy as np
 from utils.Config import CegisConfig
 from Examplers import get_example_by_name, get_example_by_id
@@ -19,8 +22,13 @@ def main():
 
     example = get_example_by_name('H1')
 
+    path = './output/H1/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        
     start = timeit.default_timer()
     opts = {
+        'path':path,
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         'b2_act': b2_activations,

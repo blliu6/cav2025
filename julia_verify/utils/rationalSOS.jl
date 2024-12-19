@@ -72,6 +72,7 @@ function rational_SOS(f, g, minval, monos, Q)
             
         elseif norm(rQ[i, i:end]) > 0
             println("rQ is not positive semidefinite.")
+            println(norm(rQ[i, i:end]))
             return rm, d, rQ * mv
         end
         rQ[i+1:end, i] .= 0
