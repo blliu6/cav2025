@@ -7,18 +7,21 @@ eig_tol = 1e-4
 tol = 1e-50
 
 
+
+SOS_time = 0
+Newton_time = 0
 function solve(n, X, f, Q, mono,newton)
-    
-    Q = round.(Q, digits=7)
+    global SOS_time, Newton_time
+    Q = round.(Q, digits=2)
     rQ = symplify_rational.(Q)
 
     model = nothing
     if !newton
         model = rational_SOS(f, 1, 0, mono, rQ)
     else
-        update_Q = newton_refine_update(f, mono, Q, eig_tol, 550, tol, X)
+        Newton_time+=@elapsed update_Q = newton_refine_update(f, mono, Q, eig_tol, 90, tol, X)
         Q_res = symplify_rational.(update_Q*update_Q')
-        model = rational_SOS(f, 1, 0, mono, Q_res)
+        SOS_time+=@elapsed model = rational_SOS(f, 1, 0, mono, Q_res)
     end
     
     SOSrational_time, coeffs, terms = model[2:end]
@@ -133,3 +136,5 @@ Q7 = [0.00019730872819687955 -3.0935782939623827e-05 -7.612321007921187e-05 0.00
  0.0003376449840061274 9.51617634549879e-06 -0.0017816564716121835 0.004360350161407844;
 ]
 solve(n, X, P7, Q7, M7, true)
+
+@show SOS_time Newton_time
