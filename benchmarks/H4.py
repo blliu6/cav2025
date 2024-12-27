@@ -46,7 +46,7 @@ def main():
         "batch_size": 1000,
         'lr': 0.01,  # the learning rate
         'loss_weight': (1, 1, 1, 1, 1, 1, 1, 1),  # The weight of the loss term
-        'R_b': 0.6,
+        'R_b': 0.3,
         'margin': 1,
         "learning_loops": 100,
         # Verification

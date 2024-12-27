@@ -30,7 +30,7 @@ def main():
         "batch_size": 300,
         'lr': 0.1,
         'loss_weight_continuous': (1, 1, 1),
-        'R_b': 0.8,
+        'R_b': 0.5,
         'margin': 2,
         "DEG_continuous": [2, 4, 1, 2],
         "learning_loops": 100,
