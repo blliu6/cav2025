@@ -1,6 +1,5 @@
 .idea
 *.pyc
-*.json
 test.py
 test1.py
 test*.py
