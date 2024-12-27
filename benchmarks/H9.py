@@ -1,4 +1,7 @@
 import timeit
+import sys, os
+sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
+
 import torch
 import numpy as np
 from utils.Config import CegisConfig
@@ -16,9 +19,13 @@ def main():
     b2_hidden_neurons = [10] * len(b2_activations)
 
     example = get_example_by_name('H9')
-
+    path = './output/H9/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+        
     start = timeit.default_timer()
     opts = {
+        'path':path,
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         'b2_act': b2_activations,

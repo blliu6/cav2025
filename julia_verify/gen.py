@@ -3,7 +3,7 @@ import json
 
 path = '/home/rmx/workspace/cav2025_2/cav2025/benchmarks/output/'
 
-example_name = "H3"
+example_name = "H10"
 
 print(f"#{example_name}")
 code = []
@@ -49,7 +49,8 @@ for root, dirs, files in os.walk(path + example_name):
         expr_id += 1
         mono_id += 1
         Q_id += 1
-        
+    
+code.append("\n@show SOS_time Newton_time\n")
         
 for c in code:
     print(c)
