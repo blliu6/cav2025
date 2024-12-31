@@ -688,6 +688,18 @@ examples = {
         f_2=[lambda x: x[1] - x[0] ** 3, lambda x: -x[0] - x[1] ** 3 + x[1] * x[2] ** 4,
              lambda x: -x[2] + x[1] ** 3 * x[2]],
         name='H10'  # DISCOVERING MULTIPLEL YAPUNOVFUNCTIONS FOR SWITCHED HYBRID SYSTEMS->Example 8
+    ),
+    37: Example(
+        n=2,
+        local_1=Zone(shape='box', low=[-2] * 2, up=[2] * 2),
+        init=Zone(shape='ball', center=[-0.5, 0.5], r=0.4 ** 2),
+        unsafe=Zone(shape='ball', center=[0.7, -0.7], r=0.3 ** 2),
+        f_1=[
+            lambda x: -0.2081 * x[0] ** 3 + 0.6633 * x[0] ** 2 - 0.9627 * x[0] - 0.06905 + x[1],
+            lambda x: 0.1512 * x[0] ** 4 - 0.7794 * x[0] ** 2 - 0.04037
+        ],
+        name='NF1',  # fossil barr2
+        continuous=True
     )
 }
 
