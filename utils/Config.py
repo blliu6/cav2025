@@ -37,6 +37,7 @@ class CegisConfig:
     eps = 0.05
     path = "./"
     C_b = 0.2
+    lie_split = False
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():

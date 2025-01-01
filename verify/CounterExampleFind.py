@@ -218,7 +218,7 @@ class CounterExampleFinder:
             U.extend(x)
 
         if not state[1]:
-            if self.config.split and self.ex.l1 == 'box':
+            if (self.config.split and self.ex.l1 == 'box') or (self.config.lie_split and self.ex.l1 == 'box'):
                 bounds = self.split_zone(self.ex.l1)
             else:
                 bounds = [self.ex.l1]
