@@ -700,6 +700,34 @@ examples = {
         ],
         name='NF1',  # fossil barr2
         continuous=True
+    ),
+    38: Example(
+        n=3,
+        local_1=Zone(shape='box', low=[-2, -2, -1.57], up=[2, 2, 1.57]),
+        init=Zone(shape='box', low=[-0.1, -2, -0.52], up=[0.1, -1.8, 0.52]),
+        # unsafe=Zone(shape='box', low=[-0.2, -0.2, -1.57], up=[0.2, 0.2, 1.57]),
+        unsafe=Zone(shape='ball', center=[0, 0, 0], r=0.2 ** 2),
+        f_1=[
+            lambda x: -0.1447 * x[2] ** 3 + 0.9884 * x[2],
+            lambda x: - 0.4163 * x[2] ** 2 + 0.9794,
+            lambda x: -0.008451 + 0.000909 * x[0] + 0.540165 * x[1] - 0.770668 * x[2] + 0.001673 * x[
+                0] ** 2 + 0.002080 * x[0] * x[1] + 0.655438 * x[0] * x[2] + 0.002829 * x[1] ** 2 + 0.011356 * x[1] * x[
+                          2] + 0.001690 * x[2] ** 2
+        ],
+        name='NF2',  # fossil barr2
+        continuous=True
+    ),
+    39: Example(
+        n=2,
+        local_1=Zone(shape='box', low=[18, 18], up=[23, 23]),
+        init=Zone(shape='box', low=[18, 18], up=[19.75, 19.75]),
+        unsafe=Zone(shape='box', low=[22, 22], up=[23, 23]),
+        f_1=[
+            lambda x: 0.725 * x[0] + 0.25 * x[1] + 0.375,
+            lambda x: 0.25 * x[0] + 0.71 * x[1] + 0.6,
+        ],
+        name='F0',  # fossil barr2
+        continuous=True
     )
 }
 
