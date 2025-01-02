@@ -17,7 +17,7 @@ class ResultHolder:
         self.rational_expression = rational_expression
         self.Q = Q
         self.monomial_list = monomial_list
-    
+
     def show(self, is_show=False):
         if not is_show:
             return
@@ -29,7 +29,7 @@ class ResultHolder:
         print("sym is ", self.monomial_list)
         print()
         print("---------------------------")
-    
+
     def save_json(self, path):
         # 将对象属性转换为字典
         # logger.debug("Type of Q: {}".format(type(self.Q)))
@@ -49,12 +49,12 @@ class ResultHolder:
             "Q": str(self.Q),
             "monomial_list": str(self.monomial_list)
         }
-        
+
         if not os.path.isdir(path):
             os.mkdir(path)
-            
+
         path += self.name + ".json"
-        
+
         # 将数据保存到 JSON 文件
         try:
             logger.info(f"Saving result to {path}")
@@ -63,8 +63,8 @@ class ResultHolder:
             print(f"Data successfully saved to {path}")
         except Exception as e:
             print(f"Error while saving JSON: {e}")
-            
-            
+
+
 class SOS:
     def __init__(self, config: CegisConfig, poly_list):
         self.config = config
@@ -74,8 +74,7 @@ class SOS:
         self.x = sp.symbols(['x{}'.format(i + 1) for i in range(self.n)])
         self.poly_list = poly_list
         self.path = config.path
-        
-        
+
     def verify_positive(self, expr, con, deg=2, name=""):
         x = self.x
         prob = SOSProblem()
@@ -84,21 +83,21 @@ class SOS:
             P, par, terms = self.polynomial(deg)
             const.append(prob.add_sos_constraint(P, x))
             expr = expr - c * P
-        expr = sp.expand(expr)
+        expr = sp.expand(expr - self.config.beta)
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
-            
+
             logger.info("SOS Infomation")
             for i, item in enumerate(const):
                 if i != len(const) - 1:
-                    
+
                     expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
                         lambda x: x.is_Float,  # 条件：是浮点数
                         lambda x: sp.Rational(str(x))  # 转换为有理数
                     )
-                    
-                    holder = ResultHolder(f"Multiplier-{i+1}", expr_rational, item.Q, item.b_sym)
+
+                    holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
                     holder.show()
                     holder.save_json(self.path + name + "/")
                 else:
@@ -106,7 +105,7 @@ class SOS:
                         lambda x: x.is_Float,  # 条件：是浮点数
                         lambda x: sp.Rational(str(x))  # 转换为有理数
                     )
-                    
+
                     holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
                     holder.show()
                     holder.save_json(self.path + name + "/")
@@ -127,37 +126,37 @@ class SOS:
         R, par, terms = self.polynomial(R_deg)
         par_s = [prob.sym_to_var(item) for item in par]
         expr = expr - R * B
-        expr = sp.expand(expr)
+        expr = sp.expand(expr - self.config.beta)
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
             logger.info("SOS Infomation")
-            
+
             for i, item in enumerate(const):
                 if i != len(const) - 1:
-                    
+
                     expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
                         lambda x: x.is_Float,  # 条件：是浮点数
                         lambda x: sp.Rational(str(x))  # 转换为有理数
                     )
-                    
-                    holder = ResultHolder(f"Multiplier-{i+1}", expr_rational, item.Q, item.b_sym)
+
+                    holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
                     holder.show()
                     holder.save_json(self.path + name + "/")
-                    
+
                 else:
                     value = [item.value for item in par_s]
                     w = sum([x * y for x, y in zip(value, terms)])
-                    
+
                     expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
                         lambda x: x.is_Float,  # 条件：是浮点数
                         lambda x: sp.Rational(str(x))  # 转换为有理数
                     )
-                    
+
                     holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
                     holder.show()
                     holder.save_json(self.path + name + "/")
-                    
+
             return True, w
         except:
             return False, None
@@ -247,7 +246,8 @@ class SOS:
         expr = sum([sp.diff(b1, x[i]) * self.ex.f1[i](x) for i in range(self.n)])
         # expr = expr - bm1 * b1
         # state[1] = self.verify_positive(expr, self.get_con(self.ex.l1), deg=deg[1])
-        state[1], R = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2], name="Lie")
+        state[1], R = self.verify_positive_multiplier(expr, b1, self.get_con(self.ex.l1), deg=deg[1], R_deg=deg[2],
+                                                      name="Lie")
         if not state[1]:
             logger.warning('The lie condition is not satisfied.')
         else:
