@@ -2,6 +2,7 @@ import timeit
 import torch
 
 import os, sys
+
 sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 
 import numpy as np
@@ -22,12 +23,12 @@ def main():
         os.mkdir(path)
     start = timeit.default_timer()
     opts = {
-        'path':path,
+        'path': path,
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         "example": example,
         'bm1_act': [],
-        "batch_size": 300,
+        "batch_size": 1000,
         'lr': 0.03,
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.5,
@@ -37,7 +38,7 @@ def main():
         'max_iter': 10,
         'split': True,
         'counterexamples_ellipsoid': True,
-        'beta': 0.001
+        'beta': 0.01
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
