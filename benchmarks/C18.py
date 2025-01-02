@@ -13,7 +13,7 @@ from learn.Cegis_barrier import Cegis
 
 def main():
     start = timeit.default_timer()
-    b1_activations = ['SKIP']
+    b1_activations = ['LINEAR']
     b1_hidden_neurons = [10] * len(b1_activations)
 
     example = get_example_by_name('C18')
@@ -28,7 +28,7 @@ def main():
         "example": example,
         "batch_size": 1000,
         'lr': 0.08,
-        'loss_weight_continuous': (1, 1, 100),
+        'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.5,
         'margin': 2,
         "DEG_continuous": [2, 2, 2, 2],

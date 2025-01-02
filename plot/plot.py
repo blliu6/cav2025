@@ -124,8 +124,8 @@ class Draw:
 
     def plot_vector_field(self, zone: Zone, f, color='grey'):
         low, up = zone.low, zone.up
-        xv = np.linspace(low[0], up[0], 200)
-        yv = np.linspace(low[1], up[1], 200)
+        xv = np.linspace(low[0], up[0], 100)
+        yv = np.linspace(low[1], up[1], 100)
         Xd, Yd = np.meshgrid(xv, yv)
 
         DX, DY = f[0]([Xd, Yd]), f[1]([Xd, Yd])
