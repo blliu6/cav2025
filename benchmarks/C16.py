@@ -36,7 +36,8 @@ def main():
         "learning_loops": 100,
         'max_iter': 10,
         'split': True,
-        'counterexamples_ellipsoid': True
+        'counterexamples_ellipsoid': True,
+        'beta': 0.01
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
