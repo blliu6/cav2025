@@ -88,7 +88,7 @@ class SOS:
         try:
             prob.solve(solver='mosek')
 
-            logger.info("SOS Infomation")
+            logger.info("SOS Information")
             for i, item in enumerate(const):
                 if i != len(const) - 1:
 
@@ -130,7 +130,7 @@ class SOS:
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
-            logger.info("SOS Infomation")
+            logger.info("SOS Information")
 
             for i, item in enumerate(const):
                 if i != len(const) - 1:
