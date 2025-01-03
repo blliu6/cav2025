@@ -14,7 +14,7 @@ def main():
     b1_hidden_neurons = [10] * len(b1_activations)
 
     example = get_example_by_name('C21')
-    path = './output/C18/'
+    path = './output/C21/'
     if not os.path.isdir(path):
         os.mkdir(path)
     start = timeit.default_timer()
