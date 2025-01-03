@@ -27,7 +27,7 @@ def main():
         'b1_hidden': b1_hidden_neurons,
         "example": example,
         "batch_size": 1000,
-        'lr': 0.08,
+        'lr': 0.05,
         'loss_weight_continuous': (1, 1, 1),
         'R_b': 0.5,
         'margin': 2,
