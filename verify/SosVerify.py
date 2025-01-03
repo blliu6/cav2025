@@ -157,7 +157,7 @@ class SOS:
                     holder.show()
                     holder.save_json(self.path + name + "/")
 
-            return True, w
+            return True, None
         except:
             return False, None
 

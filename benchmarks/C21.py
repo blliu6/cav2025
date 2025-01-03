@@ -1,3 +1,4 @@
+import os
 import timeit
 import torch
 import numpy as np
@@ -9,26 +10,28 @@ from learn.Cegis_barrier import Cegis
 
 def main():
     start = timeit.default_timer()
-    b1_activations = ['SKIP']
+    b1_activations = ['LINEAR']
     b1_hidden_neurons = [10] * len(b1_activations)
 
     example = get_example_by_name('C21')
-
+    path = './output/C18/'
+    if not os.path.isdir(path):
+        os.mkdir(path)
     start = timeit.default_timer()
     opts = {
+        'path': path,
         'b1_act': b1_activations,
         'b1_hidden': b1_hidden_neurons,
         "example": example,
         'bm1_act': [],
         "batch_size": 2000,
-        'lr': 0.02,
-        'loss_weight_continuous': (1, 1, 1),
-        'R_b': 0.6,
+        'lr': 0.5,
+        'loss_weight_continuous': (100, 1, 1),
+        'R_b': 0.4,
         'margin': 1,
-        "DEG_continuous": [0, 2, 1, 0],
+        "DEG_continuous": [2, 2, 1, 2],
         "learning_loops": 100,
-        'max_iter': 10,
-        'counterexamples_ellipsoid': True
+        'max_iter': 3
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)
