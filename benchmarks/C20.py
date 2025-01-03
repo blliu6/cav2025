@@ -23,14 +23,12 @@ def main():
         "batch_size": 1000,
         'lr': 0.01,
         'loss_weight_continuous': (1, 1, 1),
-        'R_b': 0.1,
+        'R_b': 0.5,
         'margin': 2,
-        "DEG_continuous": [2, 2, 1, 2],
+        "DEG_continuous": [2, 2, 2, 2],
         "learning_loops": 100,
         'max_iter': 12,
-        'split': True,
-        'counterexample_nums': 2,
-        'counterexamples_ellipsoid': True
+        'split': True
     }
     Config = CegisConfig(**opts)
     cegis = Cegis(Config)

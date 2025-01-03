@@ -1,6 +1,7 @@
 import timeit
 
 import os, sys
+
 sys.path.append("/home/rmx/workspace/cav2025_2/cav2025")
 
 import torch
@@ -13,7 +14,7 @@ from learn.Cegis_barrier import Cegis
 
 def main():
     start = timeit.default_timer()
-    b1_activations = ['LINEAR']
+    b1_activations = ['SKIP']
     b1_hidden_neurons = [10] * len(b1_activations)
 
     example = get_example_by_name('C18')
@@ -27,8 +28,8 @@ def main():
         'b1_hidden': b1_hidden_neurons,
         "example": example,
         "batch_size": 1000,
-        'lr': 0.05,
-        'loss_weight_continuous': (1, 1, 1),
+        'lr': 0.08,
+        'loss_weight_continuous': (1, 1, 100),
         'R_b': 0.5,
         'margin': 2,
         "DEG_continuous": [2, 2, 2, 2],
