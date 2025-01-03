@@ -1,9 +1,31 @@
 import os
 import json
+import argparse
+
+parser = argparse.ArgumentParser(description="Process example name.")
+
+# 添加命令行参数
+parser.add_argument(
+    "-e",
+    "--example_name", 
+    type=str, 
+    default="C18",  # 设置默认值
+    help="Name of the example to process (default: C18)"
+)
+
+parser.add_argument(
+    "-i",
+    "--index", 
+    type=str, 
+    default="1",  # 设置默认值
+    help="null"
+)
+args = parser.parse_args()
 
 path = '/home/rmx/workspace/cav2025_2/cav2025/benchmarks/output/'
 
-example_name = "C15"
+
+example_name = args.example_name
 
 print(f"#{example_name}")
 code = []
@@ -52,7 +74,8 @@ for root, dirs, files in os.walk(path + example_name):
     
 code.append("\n@show SOS_time Newton_time\n")
 
-file = open("/home/rmx/workspace/cav2025_2/cav2025/julia_verify/C19.jl", 'w')
+file = open(f"/home/rmx/workspace/cav2025_2/cav2025/julia_verify/{example_name}_{args.index}.jl", 'w')
+
 for c in code:
-    print(c)
+    print(c, file=file)
         
