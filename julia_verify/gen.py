@@ -51,12 +51,12 @@ for root, dirs, files in os.walk(path + example_name):
         expr = data['rational_expression']
         expr = expr.replace('**', '^')
         expr = expr.replace('/', '//')
-        for i in range(1, 30):
+        for i in range(30, 0, -1):
             expr = expr.replace(f"x{i}", f"X[{i}]")
         code.append(f"P{expr_id} = {expr}")
 
         mono = data['monomial_list'].replace('**', '^')
-        for i in range(1, 30):
+        for i in range(30, 0, -1):
             mono = mono.replace(f"x{i}", f"X[{i}]")
 
         code.append(f"M{mono_id} = {mono}")
