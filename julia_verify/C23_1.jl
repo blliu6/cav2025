@@ -16,9 +16,9 @@ function solve(n, X, f, Q, mono,newton)
 
     model = nothing
     if !newton
-        model = rational_SOS(f, 1, 0, mono, rQ)
+        SOS_time+=@elapsed model = rational_SOS(f, 1, 0, mono, rQ)
     else
-        SOS_time+=@elapsed Newton_time+=@elapsed update_Q = newton_refine_update(f, mono, Q, eig_tol, 90, tol, X)
+        Newton_time+=@elapsed update_Q = newton_refine_update(f, mono, Q, eig_tol, 90, tol, X)
         Q_res = symplify_rational.(update_Q*update_Q')
         SOS_time+=@elapsed model = rational_SOS(f, 1, 0, mono, Q_res)
     end
