@@ -87,28 +87,29 @@ class SOS:
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
+            if self.config.log:
+                logger.info("SOS Information")
+                for i, item in enumerate(const):
+                    if i != len(const) - 1:
 
-            logger.info("SOS Information")
-            for i, item in enumerate(const):
-                if i != len(const) - 1:
+                        expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                            lambda x: x.is_Float,  # 条件：是浮点数
+                            lambda x: sp.Rational(str(x))  # 转换为有理数
+                        )
 
-                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
-                        lambda x: x.is_Float,  # 条件：是浮点数
-                        lambda x: sp.Rational(str(x))  # 转换为有理数
-                    )
+                        holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
+                        holder.show()
+                        holder.save_json(self.path + name + "/")
+                    else:
+                        expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                            lambda x: x.is_Float,  # 条件：是浮点数
+                            lambda x: sp.Rational(str(x))  # 转换为有理数
+                        )
 
-                    holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
-                    holder.show()
-                    holder.save_json(self.path + name + "/")
-                else:
-                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
-                        lambda x: x.is_Float,  # 条件：是浮点数
-                        lambda x: sp.Rational(str(x))  # 转换为有理数
-                    )
+                        holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
+                        holder.show()
+                        holder.save_json(self.path + name + "/")
 
-                    holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
-                    holder.show()
-                    holder.save_json(self.path + name + "/")
             return True
         except:
             return False
@@ -130,32 +131,33 @@ class SOS:
         const.append(prob.add_sos_constraint(expr, x))
         try:
             prob.solve(solver='mosek')
-            logger.info("SOS Information")
+            if self.config.log:
+                logger.info("SOS Information")
 
-            for i, item in enumerate(const):
-                if i != len(const) - 1:
+                for i, item in enumerate(const):
+                    if i != len(const) - 1:
 
-                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
-                        lambda x: x.is_Float,  # 条件：是浮点数
-                        lambda x: sp.Rational(str(x))  # 转换为有理数
-                    )
+                        expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                            lambda x: x.is_Float,  # 条件：是浮点数
+                            lambda x: sp.Rational(str(x))  # 转换为有理数
+                        )
 
-                    holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
-                    holder.show()
-                    holder.save_json(self.path + name + "/")
+                        holder = ResultHolder(f"Multiplier-{i + 1}", expr_rational, item.Q, item.b_sym)
+                        holder.show()
+                        holder.save_json(self.path + name + "/")
 
-                else:
-                    value = [item.value for item in par_s]
-                    w = sum([x * y for x, y in zip(value, terms)])
+                    else:
+                        value = [item.value for item in par_s]
+                        w = sum([x * y for x, y in zip(value, terms)])
 
-                    expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
-                        lambda x: x.is_Float,  # 条件：是浮点数
-                        lambda x: sp.Rational(str(x))  # 转换为有理数
-                    )
+                        expr_rational = sp.expand(sum(item.get_sos_decomp())).replace(
+                            lambda x: x.is_Float,  # 条件：是浮点数
+                            lambda x: sp.Rational(str(x))  # 转换为有理数
+                        )
 
-                    holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
-                    holder.show()
-                    holder.save_json(self.path + name + "/")
+                        holder = ResultHolder(f"Total Decomposition", expr_rational, item.Q, item.b_sym)
+                        holder.show()
+                        holder.save_json(self.path + name + "/")
 
             return True, None
         except:

@@ -26,6 +26,18 @@ class Data:
                 [e * np.random.random() ** (1 / self.n) if np.random.random() > self.config.C_b else e for e in s])
             s = s + zone.center
 
+        if self.ex.name == 'C20' and self.ex.l1 == zone:
+            ans = []
+            for i in range(1 << 12):
+                point = []
+                for j in range(12):
+                    if i & (1 << j):
+                        point.append(self.ex.l1.up[j])
+                    else:
+                        point.append(self.ex.l1.low[j])
+                ans.append(np.array(point))
+            ans = np.array(ans)
+            s = np.concatenate((s, ans), axis=0)
         # from matplotlib import pyplot as plt
         # plt.plot(s[:, :1], s[:, -1], '.')
         # plt.gca().set_aspect(1)

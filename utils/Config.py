@@ -39,6 +39,7 @@ class CegisConfig:
     C_b = 0.2
     lie_split = False
     beta = 0
+    log = True
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
