@@ -473,7 +473,7 @@ examples = {
         name='C22',
         continuous=True
     ),
-26: Example(
+    26: Example(
         n=15,
         local_1=Zone(shape='box', low=[-0.3] * 15, up=[0.3] * 15),
         init=Zone(shape='box',
@@ -538,7 +538,39 @@ examples = {
         name='C23',
         continuous=True
     ),
-
+    275: Example(
+        n=17,
+        local_1=Zone(shape='box', low=[-0.3] * 17, up=[0.3] * 17),
+        init=Zone(shape='box',
+                  low=[-0.3, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2, -0.2,
+                       -0.2], up=[0, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3]),
+        unsafe=Zone(shape='box',
+                    low=[-0.2, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3, -0.3,
+                         -0.3],
+                    up=[-0.15] + [-0.22] * 16),
+        f_1=[
+            lambda x: (x[1] + x[2] + x[2] + x[3] + x[3] + x[4] + x[4] + x[5] + x[5] + x[6] + x[6] + x[7] + x[7] + x[8] +
+                       x[8] + x[9]) / 100 + 1,
+            lambda x: x[2],
+            lambda x: -10 * (x[1] - x[1] ** 3 / 6) - x[1],
+            lambda x: x[4],
+            lambda x: -10 * (x[3] - x[3] ** 3 / 6) - x[1],
+            lambda x: x[6],
+            lambda x: -10 * (x[5] - x[5] ** 3 / 6) - x[1],
+            lambda x: x[8],
+            lambda x: -10 * (x[7] - x[7] ** 3 / 6) - x[1],
+            lambda x: x[10],
+            lambda x: -10 * (x[9] - x[9] ** 3 / 6) - x[1],
+            lambda x: x[12],
+            lambda x: -10 * (x[11] - x[11] ** 3 / 6) - x[1],
+            lambda x: x[14],
+            lambda x: -10 * (x[13] - x[13] ** 3 / 6) - x[1],
+            lambda x: x[16],
+            lambda x: -10 * (x[15] - x[15] ** 3 / 6) - x[1],
+        ],
+        name='C23_1',
+        continuous=True
+    ),
     28: Example(
         n=19,
         local_1=Zone(shape='box', low=[-0.3] * 19, up=[0.3] * 19),
