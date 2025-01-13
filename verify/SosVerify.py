@@ -39,10 +39,10 @@ class ResultHolder:
             l = []
             for j in range(self.Q.shape[1]):
                 l.append(float(self.Q[i, j]))
-            # print(l)
+            
             mat.append(l)
         self.Q = mat
-        # print(mat)
+        
         data = {
             "name": self.name,
             "rational_expression": str(self.rational_expression),
@@ -72,6 +72,9 @@ class SOS:
         self.n = config.example.n
         self.var_count = 0
         self.x = sp.symbols(['x{}'.format(i + 1) for i in range(self.n)])
+        self.u = None
+        if self.ex.name in ["NF1", "NF2"]:
+            self.u = sp.Symbol("u")
         self.poly_list = poly_list
         self.path = config.path
 
@@ -116,6 +119,9 @@ class SOS:
 
     def verify_positive_multiplier(self, A, B, con, deg=2, R_deg=2, name=""):
         x = self.x
+        if self.ex.name in ["NF1", "NF2"]:
+            x.append(self.u)
+            
         prob = SOSProblem()
         expr = A
         const = []
@@ -123,6 +129,11 @@ class SOS:
             P, par, terms = self.polynomial(deg)
             const.append(prob.add_sos_constraint(P, x))
             expr = expr - c * P
+
+        if self.ex.name in ["NF1", "NF2"]:
+            P, par, terms = self.polynomial(deg)
+            const.append(prob.add_sos_constraint(P, x))
+            expr = expr + P * (self.u - self.config.err) * (self.u - self.config.err)
 
         R, par, terms = self.polynomial(R_deg)
         par_s = [prob.sym_to_var(item) for item in par]

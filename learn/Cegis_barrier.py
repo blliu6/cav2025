@@ -1,3 +1,4 @@
+from loguru import logger
 import timeit
 import os
 import torch
@@ -92,6 +93,7 @@ class Cegis:
 
         end = timeit.default_timer()
         if vis_sos:
+            print("success!")
             print('Total learning time:{}'.format(t_learn))
             print('Total counter-examples generating time:{}'.format(t_cex))
             print('Total sos verifying time:{}'.format(t_sos))
@@ -107,6 +109,7 @@ class Cegis:
                     draw.draw_3d()
         else:
             print('Failed')
+            logger.error('Failed')
         return end
 
     def merge_data(self, data, add_res):

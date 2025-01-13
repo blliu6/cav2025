@@ -1,10 +1,10 @@
 include("util.jl")
 
 function rational_SOS(f, g, minval, monos, Q)
-    start_time = time()
+    start_time = time() 
     # Convert input variables to symbolic expressions
     @Symbolics.variables _r _p[1:length(monos)] _q[1:length(monos)]
-
+    
     rf, rg, rm, rQ = f, g, minval, Q
 
     # Create a vector of monomials
