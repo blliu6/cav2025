@@ -58,22 +58,23 @@ if __name__ == '__main__':
         'margin': 0.4,
         "DEG_continuous": [2, 4, 4, 2],
         "learning_loops": 100,
-        'max_iter': 20,
-        'err': 0.02677454477719443,
+        'max_iter': 5,
+        'err': 0.01,
     }
 
-    for batch_size in [500, 600, 700, 800, 900, 1000]:
-        for lr in np.linspace(0.01, 0.3, 30):
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            sys.stdout = open(f"./log/NF1-{timestamp}.txt", "w")
+    for batch_size in [500, 300, 1000]:
+        for lr in np.linspace(0.01, 0.3, 5):
+            for margin in np.linspace(1, 4, 10):
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                sys.stdout = open(f"./log/NF1-{timestamp}.txt", "w")
 
-            params['batch_size'] = batch_size
-            params['lr'] = lr
+                params['batch_size'] = batch_size
+                params['lr'] = lr
+                params['margin'] = margin
+                print(params)
+                print()
+                main(params)
 
-            print(params)
-            print()
-            main(params)
-
-            sys.stdout = sys.__stdout__
+                sys.stdout = sys.__stdout__
 
     
