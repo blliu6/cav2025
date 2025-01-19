@@ -819,8 +819,8 @@ examples = {
         init=Zone(shape='ball', center=[-0.5, 0.5], r=0.4 ** 2),
         unsafe=Zone(shape='ball', center=[0.7, -0.7], r=0.3 ** 2),
         f_1=[
-            lambda x: -0.2081 * x[0] ** 3 + 0.6633 * x[0] ** 2 - 0.9627 * x[0] - 0.06905 + x[1],
-            lambda x: 0.1512 * x[0] ** 4 - 0.7794 * x[0] ** 2 - 0.04037
+            lambda x: 0.1913 * x[0]**3 + 0.5963 * x[0]**2 + 0.9865 * x[0] - 0.02476 + x[1], # error:0.07248146238312758
+            lambda x: 0.2074 * x[0]**4 - 0.9015 * x[0]**2 - 0.01138 # error: 0.02677454477719443
         ],
         name='NF1',  # fossil barr2
         continuous=True

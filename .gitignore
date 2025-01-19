@@ -10,3 +10,4 @@ picture/
 __pycache__/
 model/
 result/
+benchmarks/log/*
